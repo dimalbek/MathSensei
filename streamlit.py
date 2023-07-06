@@ -4,17 +4,30 @@ import wolframalpha
 import streamlit as st
 from streamlit_chat import message
 from dotenv import load_dotenv
+from langchain.memory import ConversationBufferMemory
+from langchain.llms import OpenAI
+from langchain.chains import ConversationChain
 
 load_dotenv()
 
 # Setting page title and header
-st.set_page_config(page_title="AVA", page_icon=":robot_face:")
-st.markdown("<h1 style='text-align: center;'>Your personal Math Sensei😬</h1>", unsafe_allow_html=True)
+st.set_page_config(page_title="MathSensei", page_icon=":robot_face:")
+st.markdown("<h1 style='text-align: center;'>Your personal Math Sensei🧠</h1>", unsafe_allow_html=True)
 
 # Set org ID and API key
 openai.organization = os.getenv("OPENAI_ORG_ID")
 openai.api_key = os.getenv("OPENAI_API_KEY")
 wa_client = wolframalpha.Client(os.getenv("WOLFRAMALPHA_APP_ID"))
+
+# initialize memory
+memory = ConversationBufferMemory()
+
+# llm = OpenAI(temperature=0, model='gpt-3.5-turbo')
+# conversation = ConversationChain(
+#     llm=llm,
+#     verbose=True,
+#     memory=memory)
+
 
 # Initialise session state variables
 if 'generated' not in st.session_state:
@@ -47,8 +60,7 @@ if model_name == "GPT-3.5":
 else:
     model = "wolframalpha"
 
-# reset everything
-if clear_button:
+def clear():
     st.session_state['generated'] = []
     st.session_state['past'] = []
     st.session_state['messages'] = [
@@ -59,26 +71,34 @@ if clear_button:
     st.session_state['cost'] = []
     st.session_state['total_cost'] = 0.0
     st.session_state['total_tokens'] = []
+
     global boool, boool2
     boool = 0
     boool2 = 0
     counter_placeholder.write(f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}")
 
 
-wa_problem = None
-wa_solution = None
+# reset everything
+if clear_button:
+    clear()
+
+last_question = None
+last_answer = None
 boool = 0
 boool2 = 0
 
 
 # generate a response
 def generate_response(prompt):
+    # clear()
     global boool
     global boool2
-    global wa_solution
-    global wa_problem
+    global last_answer
+    global last_question
     if model_name == "GPT-3.5":
         question = prompt
+        #buffer memory
+        memory.chat_memory.add_user_message(question)
 
         st.session_state['messages'].append({"role": "user", "content": question})
         st.session_state['messages'].append({"role": "assistant", "content": f'{question} is this a math problem? (answer only yes or no)'}) 
@@ -89,7 +109,9 @@ def generate_response(prompt):
         if boool == 1:
             # st.session_state['messages'].clear
             st.session_state['messages'].append({"role": "user", "content": question})
-            st.session_state['messages'].append({"role": "assistant", "content": f'is {question} related to {wa_problem} or {wa_solution}? (answer only yes or no)'})
+            # st.session_state['messages'].append({"role": "assistant", "content": f'is {question} related to {last_question} or {last_answer}? (answer only yes or no)'})
+            st.session_state['messages'].append({"role": "assistant", "content": f'is {question} related to {st.session_state["past"]} or {st.session_state["generated"]}? (answer only yes or no)'})
+
             chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=st.session_state['messages'])
             reply = chat.choices[0].message.content
             yes_nowa = reply
@@ -98,20 +120,37 @@ def generate_response(prompt):
                 boool2 = 1
 
         if yes_no.lower() == 'yes' or yes_no.lower() == 'yes.' or boool2 == 1:
-            promptt = f"problem: {wa_problem}, solution: {wa_solution}. {question}"
+            # promptt = f"question: {last_question}, answer: {last_answer}. {question}"
+            promptt = f"question: {st.session_state['past']}, answer: {st.session_state['generated']}. {question}"            
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 temperature=0,
                 messages=[{"role": "user", "content": promptt}],
             )
+            # llm = OpenAI(temperature=0)
+            # conversation = ConversationChain(
+            #     llm=llm,
+            #     verbose=True,
+            #     memory=memory)
+            # global conversation
+            # answer = conversation.predict(input=question)
             answer = response.choices[0].message.content
+            last_question = question
+            last_answer = answer
+            boool = 1
 
-            print(st.session_state['messages'])
+            #buffer memory
+            memory.chat_memory.add_ai_message(answer)
+            memory.load_memory_variables({})
+            # print(memory.dict())
+
+            # print(st.session_state['messages'])
             total_tokens = response.usage.total_tokens
             prompt_tokens = response.usage.prompt_tokens
             completion_tokens = response.usage.completion_tokens
-            print(answer)
+            # print(answer)
             return answer, total_tokens, prompt_tokens, completion_tokens
+            # return answer, 0, 0, 0
         
         else:
             total_tokens = st.session_state['total_cost']
@@ -144,14 +183,20 @@ def generate_response(prompt):
         if yes_no.lower() == 'yes' or yes_no.lower() == 'yes.':
             # global boool
             boool = 1
-            # global wa_problem
-            wa_problem = problem
+            # global last_question
+            last_question = problem
 
             try:
                 wa_res = wa_client.query(problem)
                 answer = next(wa_res.results).text
-                # global wa_solution
-                wa_solution = answer
+                
+                # buffer memory
+                memory.chat_memory.add_user_message(problem)
+                memory.chat_memory.add_ai_message(answer)
+                memory.load_memory_variables({})
+
+                # global last_answer
+                last_answer = answer
                 total_tokens = st.session_state['total_cost']
                 prompt_tokens = 0
                 completion_tokens = 0
@@ -200,8 +245,8 @@ with container:
 if st.session_state['generated']:
     with response_container:
         for i in range(len(st.session_state['generated'])):
-            message(st.session_state["past"][i], is_user=True, key=str(i) + '_user')
-            message(st.session_state["generated"][i], key=str(i))
+            message(st.session_state["past"][i], is_user=True, key=str(i) + '_user', avatar_style='micah')
+            message(st.session_state["generated"][i], key=str(i), avatar_style='identicon')
             if model_name == "GPT-3.5":
                 st.write(
                     f"Model used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}; Cost: ${st.session_state['cost'][i]:.5f}")

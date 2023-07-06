@@ -1,0 +1,10 @@
+
+Find the area of the surface obtained by rotating the curve y = sqrt(3x) from x = 2 to x = 5 about the x-axis
+
+write c++ code of string concatination
+
+write c++ code to find square area
+
+It 2/3a - 2 <= -3, what is the greatest possible value of 8a + 2?
+
+Find the volume of the solid obtained by rotating the region under the graph of the function f(x) = tan^2(x) about the x-axis over the interval [0, pi/4]
