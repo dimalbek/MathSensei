@@ -17,9 +17,9 @@ st.markdown(
 )
 
 # Set org ID and API key
-openai.organization = st.secrets("OPENAI_ORG_ID")
-openai.api_key = st.secrets("OPENAI_API_KEY")
-wa_client = wolframalpha.Client(st.secrets("WOLFRAMALPHA_APP_ID"))
+openai.organization = st.secrets["OPENAI_ORG_ID"]
+openai.api_key = st.secrets["OPENAI_API_KEY"]
+wa_client = wolframalpha.Client(st.secrets["WOLFRAMALPHA_APP_ID"])
 
 # initialize memory
 memory = ConversationBufferMemory()
