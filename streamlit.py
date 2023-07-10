@@ -5,8 +5,6 @@ import streamlit as st
 from streamlit_chat import message
 from dotenv import load_dotenv
 from langchain.memory import ConversationBufferMemory
-from langchain.llms import OpenAI
-from langchain.chains import ConversationChain
 
 load_dotenv()
 
@@ -99,6 +97,7 @@ def generate_response(prompt):
         question = prompt
         #buffer memory
         memory.chat_memory.add_user_message(question)
+        # chat_messages = []
 
         st.session_state['messages'].append({"role": "user", "content": question})
         st.session_state['messages'].append({"role": "assistant", "content": f'{question} is this a math problem? (answer only yes or no)'}) 
@@ -110,7 +109,7 @@ def generate_response(prompt):
             # st.session_state['messages'].clear
             st.session_state['messages'].append({"role": "user", "content": question})
             # st.session_state['messages'].append({"role": "assistant", "content": f'is {question} related to {last_question} or {last_answer}? (answer only yes or no)'})
-            st.session_state['messages'].append({"role": "assistant", "content": f'is {question} related to {st.session_state["past"]} or {st.session_state["generated"]}? (answer only yes or no)'})
+            st.session_state['messages'].append({"role": "assistant", "content": f'is {question} related to {st.session_state["past"][-1]} or {st.session_state["generated"][-1]}? (answer only yes or no)'})
 
             chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=st.session_state['messages'])
             reply = chat.choices[0].message.content
@@ -121,19 +120,25 @@ def generate_response(prompt):
 
         if yes_no.lower() == 'yes' or yes_no.lower() == 'yes.' or boool2 == 1:
             # promptt = f"question: {last_question}, answer: {last_answer}. {question}"
-            promptt = f"question: {st.session_state['past']}, answer: {st.session_state['generated']}. {question}"            
+            if st.session_state['past']:
+                last_past = st.session_state['past'][-1]
+            else:
+                last_past = ""
+
+            if st.session_state['generated']:
+                last_generated = st.session_state['generated'][-1]
+            else:
+                last_generated = ""
+
+            promptt = f"question: {last_past}, answer: {last_generated}. {question}"
+
+            # promptt = f"question: {st.session_state['past'][-1]}, answer: {st.session_state['generated'][-1]}. {question}"            
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 temperature=0,
                 messages=[{"role": "user", "content": promptt}],
             )
-            # llm = OpenAI(temperature=0)
-            # conversation = ConversationChain(
-            #     llm=llm,
-            #     verbose=True,
-            #     memory=memory)
-            # global conversation
-            # answer = conversation.predict(input=question)
+            print(f'\n\n\nPAST: {last_past}\nGENERATED {last_generated}\nMESSAGES {st.session_state["messages"][-1]}\n\n')
             answer = response.choices[0].message.content
             last_question = question
             last_answer = answer
