@@ -3,4 +3,4 @@ streamlit==1.24.0
 langchain==0.0.221
 openai==0.27.8
 wolframalpha==5.0.0
-dotenv
+dotenv==0.0.5
