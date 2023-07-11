@@ -1,13 +1,7 @@
 import openai
-import os
 import wolframalpha
 import streamlit as st
 from streamlit_chat import message
-
-# from dotenv import load_dotenv
-from langchain.memory import ConversationBufferMemory
-
-# load_dotenv()
 
 # Setting page title and header
 st.set_page_config(page_title="MathSensei", page_icon=":robot_face:")
@@ -20,16 +14,6 @@ st.markdown(
 openai.organization = st.secrets["OPENAI_ORG_ID"]
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 wa_client = wolframalpha.Client(st.secrets["WOLFRAMALPHA_APP_ID"])
-
-# initialize memory
-memory = ConversationBufferMemory()
-
-# llm = OpenAI(temperature=0, model='gpt-3.5-turbo')
-# conversation = ConversationChain(
-#     llm=llm,
-#     verbose=True,
-#     memory=memory)
-
 
 # Initialise session state variables
 if "generated" not in st.session_state:
@@ -89,42 +73,18 @@ def clear():
 if clear_button:
     clear()
 
-last_question = None
-last_answer = None
 boool = 0
 boool2 = 0
 
 
 # generate a response
 def generate_response(prompt):
-    # clear()
     global boool
     global boool2
-    global last_answer
-    global last_question
     if model_name == "GPT-3.5":
         question = prompt
-        # buffer memory
-        memory.chat_memory.add_user_message(question)
-        # chat_messages = []
-
-        st.session_state["messages"].append({"role": "user", "content": question})
-        st.session_state["messages"].append(
-            {
-                "role": "assistant",
-                "content": f"{question} is this a math problem? (answer only yes or no)",
-            }
-        )
-        chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=st.session_state["messages"]
-        )
-        reply = chat.choices[0].message.content
-        yes_no = reply
-        st.session_state["messages"].append({"role": "assistant", "content": reply})
-        if boool == 1:
-            # st.session_state['messages'].clear
+        if st.session_state["past"]:
             st.session_state["messages"].append({"role": "user", "content": question})
-            # st.session_state['messages'].append({"role": "assistant", "content": f'is {question} related to {last_question} or {last_answer}? (answer only yes or no)'})
             st.session_state["messages"].append(
                 {
                     "role": "assistant",
@@ -141,8 +101,21 @@ def generate_response(prompt):
             if yes_nowa.lower() == "yes" or yes_nowa.lower() == "yes.":
                 boool2 = 1
 
+        st.session_state["messages"].append({"role": "user", "content": question})
+        st.session_state["messages"].append(
+            {
+                "role": "assistant",
+                "content": f"{question} is this a math problem? (answer only yes or no)",
+            }
+        )
+        chat = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo", messages=st.session_state["messages"]
+        )
+        reply = chat.choices[0].message.content
+        yes_no = reply
+        st.session_state["messages"].append({"role": "assistant", "content": reply})
+
         if yes_no.lower() == "yes" or yes_no.lower() == "yes." or boool2 == 1:
-            # promptt = f"question: {last_question}, answer: {last_answer}. {question}"
             if st.session_state["past"]:
                 last_past = st.session_state["past"][-1]
             else:
@@ -155,7 +128,6 @@ def generate_response(prompt):
 
             promptt = f"question: {last_past}, answer: {last_generated}. {question}"
 
-            # promptt = f"question: {st.session_state['past'][-1]}, answer: {st.session_state['generated'][-1]}. {question}"
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 temperature=0,
@@ -165,22 +137,12 @@ def generate_response(prompt):
                 f'\n\n\nPAST: {last_past}\nGENERATED {last_generated}\nMESSAGES {st.session_state["messages"][-1]}\n\n'
             )
             answer = response.choices[0].message.content
-            last_question = question
-            last_answer = answer
             boool = 1
 
-            # buffer memory
-            memory.chat_memory.add_ai_message(answer)
-            memory.load_memory_variables({})
-            # print(memory.dict())
-
-            # print(st.session_state['messages'])
             total_tokens = response.usage.total_tokens
             prompt_tokens = response.usage.prompt_tokens
             completion_tokens = response.usage.completion_tokens
-            # print(answer)
             return answer, total_tokens, prompt_tokens, completion_tokens
-            # return answer, 0, 0, 0
 
         else:
             total_tokens = st.session_state["total_cost"]
@@ -188,20 +150,7 @@ def generate_response(prompt):
             completion_tokens = 0
             answer = "I'm a math assistant and I can only solve math problems. The problem you provided is not related to math"
             return answer, total_tokens, prompt_tokens, completion_tokens
-
-        # st.session_state['messages'].append({"role": "user", "content": prompt})
-
-        # completion = openai.ChatCompletion.create(
-        #     model=model,
-        #     messages=st.session_state['messages']
-        # )
-        # response = completion.choices[0].message.content
-        # st.session_state['messages'].append({"role": "assistant", "content": response})
-        # # print(st.session_state['messages'])
-        # total_tokens = completion.usage.total_tokens
-        # prompt_tokens = completion.usage.prompt_tokens
-        # completion_tokens = completion.usage.completion_tokens
-        # return response, total_tokens, prompt_tokens, completion_tokens
+        
     else:
         problem = prompt
         st.session_state["messages"].append({"role": "user", "content": problem})
@@ -218,22 +167,12 @@ def generate_response(prompt):
         yes_no = reply
         st.session_state["messages"].append({"role": "assistant", "content": reply})
         if yes_no.lower() == "yes" or yes_no.lower() == "yes.":
-            # global boool
             boool = 1
-            # global last_question
-            last_question = problem
 
             try:
                 wa_res = wa_client.query(problem)
                 answer = next(wa_res.results).text
 
-                # buffer memory
-                memory.chat_memory.add_user_message(problem)
-                memory.chat_memory.add_ai_message(answer)
-                memory.load_memory_variables({})
-
-                # global last_answer
-                last_answer = answer
                 total_tokens = st.session_state["total_cost"]
                 prompt_tokens = 0
                 completion_tokens = 0
@@ -243,7 +182,7 @@ def generate_response(prompt):
                 total_tokens = st.session_state["total_cost"]
                 prompt_tokens = 0
                 completion_tokens = 0
-                answer = "I'm sorry, I couldn't solve the problem."
+                answer = "I'm sorry, I couldn't solve the problem. Try GPT-3.5 model"
                 return answer, total_tokens, prompt_tokens, completion_tokens
         else:
             total_tokens = st.session_state["total_cost"]
@@ -275,8 +214,7 @@ with container:
         # from https://openai.com/pricing#language-models
         if model_name == "GPT-3.5":
             cost = total_tokens * 0.002 / 1000
-        # else:
-        #     cost = (prompt_tokens * 0.03 + completion_tokens * 0.06) / 1000
+
         if model_name == "GPT-3.5":
             st.session_state["cost"].append(cost)
             st.session_state["total_cost"] += cost
@@ -294,9 +232,15 @@ if st.session_state["generated"]:
                 st.session_state["generated"][i], key=str(i), avatar_style="identicon"
             )
             if model_name == "GPT-3.5":
-                st.write(
-                    f"Model used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}; Cost: ${st.session_state['cost'][i]:.5f}"
-                )
+                # st.write(
+                #     str(st.session_state)
+                #     + "Index:"
+                #     + str(i)
+                # )
+                if i != 0:
+                    st.write(
+                        f"\nModel used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}; Cost: ${st.session_state['cost'][0]:.5f}"
+                    )
             else:
                 st.write(
                     f"Model used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}"
