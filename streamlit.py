@@ -8,26 +8,29 @@ from streamlit_star_rating import st_star_rating
 
 
 def home_page():
-    st.markdown("# Welcome to MathSensei App")
-    st.write("MathSensei is a personal math assistant that can help you with various math problems.")
+    st.markdown("# Добро пожаловать в приложение MathSensei")
+    st.write("MathSensei - это персональный математический помощник, который поможет вам решить различные математические проблемы.")
 
-    st.markdown("## Instructions")
-    st.write("1. Enter your math problem or question in the input box on the left.")
-    st.write("2. Choose the appropriate model: GPT-3.5 or Wolfram Alpha.")
-    st.write("3. Click the 'Send' button to get a response from the MathSensei assistant.")
-    st.write("4. The assistant will provide an answer or further questions to clarify your query.")
-    st.write("5. You can have a conversation with the assistant by entering multiple queries.")
+    st.markdown("## Инструкции")
+    st.write("1. Введите вашу математическую задачу или вопрос в поле ввода.")
+    st.write("2. Выберите подходящую модель: GPT-3.5 или Wolfram Alpha.")
+    st.write("3. Нажмите кнопку 'Отправить', чтобы получить ответ от помощника MathSensei.")
+    st.write("4. Помощник предоставит ответ или дополнительные вопросы для уточнения вашего запроса.")
+    st.write("5. Вы можете вести диалог с помощником, задавая несколько запросов подряд.")
 
-    st.markdown("## About")
-    st.write("MathSensei is powered by OpenAI's GPT-3.5 and Wolfram Alpha.")
-    st.write("It aims to provide assistance and solutions to various math problems and queries.")
+    st.markdown("## О приложении")
+    st.write("MathSensei работает на базе GPT-3.5 от OpenAI и Wolfram Alpha.")
+    st.write("Он призван помочь с решением различных математических проблем и вопросов.")
 
-    st.markdown("## Feedback")
-    st.write("We value your feedback! If you have any suggestions or encounter any issues, please provide your feedback using the feedback form.")
-    st.write("Your feedback helps us improve the MathSensei app and provide a better user experience.")
+    st.markdown("## Обратная связь")
+    st.write("Мы ценим ваше мнение! Если у вас есть предложения или возникли проблемы, пожалуйста, оставьте свой отзыв, используя форму обратной связи.")
+    st.write("Ваш отзыв помогает нам улучшить приложение MathSensei и предоставить лучший пользовательский опыт.")
 
-    if st.button("Go to Main App"):
-        st.empty()  # Clear the home page content
+    st.markdown("## Примечание")
+    st.write("Обратите внимание, что Wolfram Alpha понимает только английский язык, в то время как GPT-3.5 способен понимать и английский, и русский язык.")
+    
+    if st.button("Перейти к основному приложению"):
+        st.empty()  # Очистить содержимое домашней страницы
         main_app()
 
 
@@ -47,7 +50,7 @@ def main_app():
     # Setting page title and header
     st.set_page_config(page_title="MathSensei", page_icon=":robot_face:")
     st.markdown(
-        "<h1 style='text-align: center;'>Your personal Math Sensei🧠</h1>",
+        "<h1 style='text-align: center;'>Твой личный Math Sensei🧠</h1>",
         unsafe_allow_html=True,
     )
 
@@ -88,12 +91,12 @@ def main_app():
 
         # Sidebar - let user choose model, show total cost of current conversation, and let user clear the current conversation
         st.sidebar.title("Math Sensei")
-        model_name = st.sidebar.radio("Choose a model:", ("GPT-3.5", "wolframalpha"))
+        model_name = st.sidebar.radio("Выберите модель:", ("GPT-3.5", "wolframalpha"))
         counter_placeholder = st.sidebar.empty()
         counter_placeholder.write(
-            f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}"
+            f"Общая сумма разговора: ${st.session_state['total_cost']:.5f}"
         )
-        clear_button = st.sidebar.button("Clear Conversation", key="clear")
+        clear_button = st.sidebar.button("Очистить чат", key="clear")
 
         def clear():
             st.session_state["generated"] = []
@@ -109,7 +112,7 @@ def main_app():
             st.session_state["bool_solve"] = 0
 
             counter_placeholder.write(
-                f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}"
+                f"Общая сумма разговора: ${st.session_state['total_cost']:.5f}"
             )
 
         # reset everything
@@ -184,7 +187,7 @@ def main_app():
                     total_tokens = st.session_state["total_cost"]
                     prompt_tokens = 0
                     completion_tokens = 0
-                    answer = "I'm a math assistant and I can only solve math problems. The problem you provided is not related to math"
+                    answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     return answer, total_tokens, prompt_tokens, completion_tokens
                 
             else:
@@ -216,13 +219,13 @@ def main_app():
                         total_tokens = st.session_state["total_cost"]
                         prompt_tokens = 0
                         completion_tokens = 0
-                        answer = "I'm sorry, I couldn't solve the problem. Try GPT-3.5 model"
+                        answer = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-3.5"
                         return answer, total_tokens, prompt_tokens, completion_tokens
                 else:
                     total_tokens = st.session_state["total_cost"]
                     prompt_tokens = 0
                     completion_tokens = 0
-                    answer = "I'm a math assistant and I can only solve math problems. The problem you provided is not related to math"
+                    answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     return answer, total_tokens, prompt_tokens, completion_tokens
 
         # container for chat history
@@ -232,8 +235,8 @@ def main_app():
 
         with container:
             with st.form(key="my_form", clear_on_submit=True):
-                user_input = st.text_area("You:", key="input", height=100)
-                submit_button = st.form_submit_button(label="Send")
+                user_input = st.text_area("ВЫ:", key="input", height=100)
+                submit_button = st.form_submit_button(label="Отправить")
 
             if submit_button and user_input:
                 output, total_tokens, prompt_tokens, completion_tokens = generate_response(
@@ -289,19 +292,18 @@ def main_app():
                         # )
                         if i != 0:
                             st.write(
-                                f"\nModel used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}; Cost: ${st.session_state['cost'][0]:.5f}"
+                                f"Используемая модель: {st.session_state['model_name'][i]}; Количество токенов: {st.session_state['total_tokens'][i]}; Цена: ${st.session_state['cost'][0]:.5f}"
                             )
                     else:
                         st.write(
-                            f"Model used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}"
+                            f"Используемая модель: {st.session_state['model_name'][i]}; Количество токенов: {st.session_state['total_tokens'][i]}"
                         )
                     counter_placeholder.write(
-                        f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}"
+                        f"Общая сумма разговора: ${st.session_state['total_cost']:.5f}"
                     )
 
         def save_feedback(email, feedback, rating):
-            # Save the feedback and email to a file or database
-            # For example, using MongoDB:
+            # Save the feedback, rating and email to MongoDB
             feedback_data = {
                 "email": email,
                 "rating": rating,
@@ -313,20 +315,20 @@ def main_app():
         feedback_container = st.container()
 
         with feedback_container:
-            st.header("Feedback")
+            st.header("Обратная связь")
             # Star rating component
             rating = st_star_rating(
                         label="", maxValue=5, defaultValue=0, size=30
                     )
             # Feedback form inputs
-            email_input = st.text_input("Enter your email address")
-            feedback_text = st.text_area("Enter your feedback")
+            email_input = st.text_input("Введите ваш адрес электронной почты")
+            feedback_text = st.text_area("Пожалуйста, оставьте ваш отзыв. Если у вас возникли проблемы, задача не была решена или у вас есть предложения по улучшению приложения, опишите их здесь. ")
 
             # Feedback submit button
-            if st.button("Submit Feedback"):
+            if st.button("Отправить обратную связь"):
                 # Save the feedback and email to a file or database
                 save_feedback(email_input, feedback_text, rating)
-                st.success("Thank you for your feedback!")
+                st.success("Спасибо за ваш отзыв!")
 
         print("DB STATS:")
         print(db.command("dbStats"))
