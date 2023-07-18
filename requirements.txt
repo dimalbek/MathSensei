@@ -4,3 +4,4 @@ langchain==0.0.221
 openai==0.27.8
 wolframalpha==5.0.0
 st-star-rating==0.0.5
+pymongo==4.4.1
