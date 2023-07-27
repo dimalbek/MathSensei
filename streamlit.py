@@ -413,6 +413,9 @@ def main_app():
                 prompt_tokens,
                 completion_tokens,
             ) = generate_response(user_input)
+
+            print(output)
+        
             st.session_state["past"].append(user_input)
             st.session_state["generated"].append(output)
             st.session_state["generated_latex"].append(latex_output)
