@@ -363,7 +363,7 @@ def main_app():
                         total_tokens = st.session_state["total_cost"]
                         prompt_tokens = 0
                         completion_tokens = 0
-                        answer_latex = ""
+                        # answer_latex = ""
                         return (
                             answer,
                             answer_latex,
