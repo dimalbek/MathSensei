@@ -465,10 +465,10 @@ def main_app():
                     # user_msg = st.session_state["past"][i]
                     # bot_msg = st.session_state["generated"][i]
                     print("\n\n\noutput:")
-                    print(output)
+                    print(st.session_state['generated'][i])
                     print("\n\n\n")
                     print("\n\n\noutput_latex:")
-                    print(latex_output)
+                    print(st.session_state['generated_latex'][i])
                     print("\n\n\n")
                     # Set user avatar using user_msg_container_html_template
                     # user_avatar_template = user_msg_container_html_template.replace("$MSG", user_msg)

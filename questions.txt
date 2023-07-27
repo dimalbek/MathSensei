@@ -1,3 +1,4 @@
+Find the area of the surface obtained by rotating the curve y = sqrt(3x) from x = 2 to x = 5 about the x-axis
 
 write c++ code of string concatination
 
@@ -6,3 +7,70 @@ write c++ code to find square area
 It 2/3a - 2 <= -3, what is the greatest possible value of 8a + 2?
 
 Find the volume of the solid obtained by rotating the region under the graph of the function f(x) = tan^2(x) about the x-axis over the interval [0, pi/4]
+
+SAT:
+The average number of students per classroom, y, at Central High School can
+be estimated using the equation y = 0.8636x + 27.227, where x represents the
+number of years since 2004 and x ≤ 10. Which of the following statements is
+the best interpretation of the number 0.8636 in the context of this problem?
+A) The estimated average number of students per classroom in 2004
+B) The estimated average number of students per classroom in 2014
+C) The estimated yearly decrease in the average number of students per
+classroom
+D) The estimated yearly increase in the average number of students per
+classroom
+
+It 2/3a - 2 <= -3, what is the greatest possible value of 8a + 2?
+
+If 2/(a − 1) = 4/y, and y ≠ 0 where a ≠ 1, what is y in terms of a?
+
+(14 − 2i)(7 + 12i)?
+
+Incorrect(
+The graph of y = (2x − 4)(x − 4) is a parabola in the xy-plane. In which of
+the following equivalent equations do the x- and y-coordinates of the
+vertex of the parabola appear as constants or coefficients?
+A) y = 2x^2 − 12x + 16
+B) y = 2x(x − 6) + 16
+C) y = 2(x − 3)^2 + (−2)
+D) y = (x − 2)(2x − 8)
+)
+
+If a^(-1/2) = x, where a > 0 and x > 0, give a in terms of x
+
+Icorrect(
+Which of the following is equal to sin (π/5)?
+A) −cos (π/5)
+B) −sin (π/5)
+C) cos (3π/10)
+D) sin (7π/10)
+)
+
+The recommended daily calcium intake for a 20-year-old person is
+1,000 milligrams (mg). One cup of milk contains 299 mg of calcium and
+one cup of juice contains 261 mg of calcium. Which of the following
+inequalities represents the possible number of cups of milk, m, and cups of
+juice, j, a 20-year-old person could drink in a day to meet or exceed the
+recommended daily calcium intake from these drinks alone?
+A) 299m + 261j ≥ 1,000
+B) 299m + 261j > 1,000
+C) 299/m + 261/j ≥ 1,000
+D) 299/m + 261/j > 1,000
+
+A research assistant selected 75 undergraduate students at random from
+the list of all students enrolled in the psychology-degree program at a large
+university. She asked each of the 75 students, “How many minutes per day
+do you typically spend reading?” The mean reading time in the sample was
+89 minutes, and the margin of error for this estimate was 4.28 minutes.
+Another research assistant intends to replicate the survey and will attempt
+to get a smaller margin of error. Which of the following samples will most
+likely result in a smaller margin of error for the estimated mean time
+students in the psychology-degree program read per day?
+A) 40 undergraduate psychology-degree program students selected at
+random
+B) 40 undergraduate students selected at random from all degree
+programs at the university
+C) 300 undergraduate psychology-degree program students selected at
+random
+D) 300 undergraduate students selected at random from all degree
+programs at the university

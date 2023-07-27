@@ -6,3 +6,5 @@ wolframalpha==5.0.0
 st-star-rating==0.0.5
 pymongo==4.4.1
 matplotlib==3.7.2
+latex==0.7.0
+PyLaTeX==1.4.1
