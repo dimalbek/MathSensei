@@ -172,9 +172,6 @@ def main_app():
                 over_token = False
                 msg = []
                 if st.session_state["past"]:
-                    # st.session_state["messages"].append(
-                    #     {"role": "user", "content": question}
-                    # )
                     msg.append(
                         {
                             "role": "assistant",
@@ -190,9 +187,7 @@ def main_app():
                     except Exception:
                         yes_nowa = "no"
                         over_token = True
-                    # st.session_state["messages"].append(
-                    #     {"role": "assistant", "content": reply}
-                    # )
+
                     if yes_nowa.lower() == "yes" or yes_nowa.lower() == "yes.":
                         st.session_state["bool_solve"] = 1
 
@@ -216,9 +211,6 @@ def main_app():
                     yes_no = "no"
                     over_token = True
 
-                # st.session_state["messages"].append(
-                #     {"role": "assistant", "content": yes_no}
-                # )
                 if over_token is True:
                     answer = "Длина вопроса слишком большая"
                     answer_latex = "Длина вопроса слишком большая"
@@ -350,10 +342,6 @@ def main_app():
                     over_token = True
                     yes_no = "no"
                 msg = []
-                # yes_no = reply
-                # st.session_state["messages"].append(
-                #     {"role": "assistant", "content": reply}
-                # )
                 if yes_no.lower() == "yes" or yes_no.lower() == "yes.":
                     try:
                         wa_res = wa_client.query(problem)
@@ -412,10 +400,7 @@ def main_app():
 
         # container for chat history
         response_container = st.container()
-        # # container for text box
-        # container = st.container()
 
-        # with container:
         with st.form(key="my_form", clear_on_submit=True):
             user_input = st.text_area("ВЫ:", key="input", height=100)
             submit_button = st.form_submit_button(label="Отправить")
@@ -513,8 +498,8 @@ def main_app():
                             pad_inches=0.0,
                             transparent=True,
                         )
-                        plt.close(fig)
-
+                        plt.close(fig) 
+           
                         # Display the image in the Streamlit app
                         st.image(buffer.getvalue())
 
@@ -609,9 +594,6 @@ def main_app():
             # Save the feedback and email to a file or database
             save_feedback(email_input, feedback_text, rating)
             st.success("Спасибо за ваш отзыв!")
-
-        # print("DB STATS:")
-        # print(db.command("dbStats"))
 
 
 # Run the main app
