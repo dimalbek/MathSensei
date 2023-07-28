@@ -1,8 +1,10 @@
 streamlit-chat==0.1.1
-streamlit==1.23.1
+streamlit==1.25.0
 openai==0.27.8
 wolframalpha==5.0.0
 st-star-rating==0.0.5
 pymongo==4.4.1
-# matplotlib==3.7.2
-matplotlib==3.5.3
+matplotlib==3.7.2
+latex==0.7.0
+PyLaTeX==1.4.1
+
