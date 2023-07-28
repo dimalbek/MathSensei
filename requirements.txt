@@ -6,4 +6,4 @@ wolframalpha==5.0.0
 st-star-rating==0.0.5
 pymongo==4.4.1
 matplotlib==3.7.2
-pip==22.0.3
+pip==23.2.1
