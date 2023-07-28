@@ -9,6 +9,7 @@ from streamlit_star_rating import st_star_rating
 from render import user_msg_container_html_template, bot_msg_container_html_template
 import matplotlib.pyplot as plt
 import io
+import os
 
 TST = r"""To find the area of the surface obtained by rotating the curve $y = \sqrt{3x}$ from $x = 2$ to $x = 5$ about the x-axis, we can use the formula for the surface area of revolution:
 
@@ -77,7 +78,9 @@ def home_page():
 
 
 def get_db_client():
-    mongo_url = st.secrets["MONGO_URL"]
+    mongo_url = os.getenv("MONGO_URL")
+    if not mongo_url:
+        mongo_url = st.secrets["MONGO_URL"]
 
     # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
     client = pymongo.MongoClient(mongo_url)
@@ -103,9 +106,19 @@ def main_app():
         home_page()
     else:
         # Set org ID and API key
-        openai.organization = st.secrets["OPENAI_ORG_ID"]
-        openai.api_key = st.secrets["OPENAI_API_KEY"]
-        wa_client = wolframalpha.Client(st.secrets["WOLFRAMALPHA_APP_ID"])
+        openai_org_id = os.getenv("OPENAI_ORG_ID")
+        if not openai_org_id:
+            openai_org_id = st.secrets["OPENAI_ORG_ID"]
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            openai_api_key = st.secrets["OPENAI_API_KEY"]
+        wolframalpha_app_id = os.getenv("WOLFRAMALPHA_APP_ID")
+        if not wolframalpha_app_id:
+            wolframalpha_app_id = st.secrets["WOLFRAMALPHA_APP_ID"]
+
+        openai.organization = openai_org_id
+        openai.api_key = openai_api_key
+        wa_client = wolframalpha.Client(wolframalpha_app_id)
 
         # Initialise session state variables
         if "generated" not in st.session_state:
