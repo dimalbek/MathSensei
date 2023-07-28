@@ -139,15 +139,17 @@ def main_app():
         if "generated_latex" not in st.session_state:
             st.session_state["generated_latex"] = []
         if "output_format" not in st.session_state:
-            st.session_state["otput_format"] = []
+            st.session_state["output_format"] = []
         if "print_latex" not in st.session_state:
-            st.session_state["print_latex"] = 1
+            st.session_state["bool_latex"] = 1
 
         # Sidebar - let user choose model, output format, and let user clear the current conversation
         st.sidebar.title("Math Sensei")
         model_name = st.sidebar.radio("Выберите модель:", ("GPT-3.5", "wolframalpha"))
-        output_format = st.sidebar.radio("Выберите формат вывода:", ("Text and LaTeX", "Text (faster option)"))
-        counter_placeholder = st.sidebar.empty()
+        output_format = st.sidebar.radio(
+            "Выберите формат вывода:", ("Text and LaTeX", "Text (faster option)")
+        )
+        # counter_placeholder = st.sidebar.empty()
         clear_button = st.sidebar.button("Очистить чат", key="clear")
 
         def clear():
@@ -159,6 +161,8 @@ def main_app():
             st.session_state["model_name"] = []
             st.session_state["bool_solve"] = 0
             st.session_state["generated_latex"] = []
+            st.session_state["bool_latex"] = 1
+            st.session_state["ouput_format"] = []
 
         # reset everything
         if clear_button:
@@ -166,29 +170,14 @@ def main_app():
 
         # generate a response
         def generate_response(prompt):
+            if output_format == "Text and LaTeX":
+                st.session_state["bool_latex"] = 1
+            else:
+                st.session_state["bool_latex"] = 0
             if model_name == "GPT-3.5":
                 question = prompt
                 over_token = False
                 msg = []
-                if st.session_state["past"]:
-                    msg.append(
-                        {
-                            "role": "assistant",
-                            "content": f'is {question} related to {st.session_state["past"][-1]} or {st.session_state["generated"][-1]}? (answer only yes or no)',
-                        }
-                    )
-                    try:
-                        chat = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo", messages=msg
-                        )
-                        msg = []
-                        yes_nowa = chat.choices[0].message.content
-                    except Exception:
-                        yes_nowa = "no"
-                        over_token = True
-
-                    if yes_nowa.lower() == "yes" or yes_nowa.lower() == "yes.":
-                        st.session_state["bool_solve"] = 1
 
                 st.session_state["messages"].append(
                     {"role": "user", "content": question}
@@ -210,9 +199,32 @@ def main_app():
                     yes_no = "no"
                     over_token = True
 
+                if st.session_state["past"] and (
+                    yes_no.lower() == "no" or yes_no.lower() == "no."
+                ):
+                    msg.append(
+                        {
+                            "role": "assistant",
+                            "content": f'is {question} related to {st.session_state["past"][-1]} or {st.session_state["generated"][-1]}? (answer only yes or no)',
+                        }
+                    )
+                    try:
+                        chat = openai.ChatCompletion.create(
+                            model="gpt-3.5-turbo", messages=msg
+                        )
+                        msg = []
+                        yes_nowa = chat.choices[0].message.content
+                    except Exception:
+                        yes_nowa = "no"
+                        over_token = True
+
+                    if yes_nowa.lower() == "yes" or yes_nowa.lower() == "yes.":
+                        st.session_state["bool_solve"] = 1
+                
                 if over_token is True:
                     answer = "Длина вопроса слишком большая"
                     answer_latex = "Длина вопроса слишком большая"
+                    st.session_state["bool_latex"] = 0
                     st.session_state["messages"].append(
                         {"role": "assistant", "content": answer}
                     )
@@ -258,6 +270,7 @@ def main_app():
                             logging.exception("Too long")
                             answer = "Длина вопроса слишком большая"
                             answer_latex = "Длина вопроса слишком большая"
+                            st.session_state["bool_latex"] = 0
                             st.session_state["messages"].append(
                                 {"role": "assistant", "content": answer}
                             )
@@ -268,18 +281,22 @@ def main_app():
                     print(
                         f'\n\n\nPAST: {last_past}\nGENERATED {last_generated}\nMESSAGES {st.session_state["messages"][-1]}\n\n'
                     )
-                    latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
-                    response = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo",
-                        temperature=0,
-                        messages=[
-                            {
-                                "role": "user",
-                                "content": f"Please convert {answer} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
-                            }
-                        ],
-                    )
-                    answer_latex = response.choices[0].message.content
+                    if st.session_state["bool_latex"] == 1:
+                        latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
+                        response = openai.ChatCompletion.create(
+                            model="gpt-3.5-turbo",
+                            temperature=0,
+                            messages=[
+                                {
+                                    "role": "user",
+                                    "content": f"Please convert {answer} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
+                                }
+                            ],
+                        )
+                        answer_latex = response.choices[0].message.content
+                    else:
+                        answer_latex = ""
+
                     return (
                         answer,
                         answer_latex,
@@ -288,6 +305,7 @@ def main_app():
                 else:
                     answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     answer_latex = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
+                    st.session_state["bool_latex"] = 0
                     return (
                         answer,
                         answer_latex,
@@ -315,24 +333,28 @@ def main_app():
                 except Exception:
                     over_token = True
                     yes_no = "no"
+                    st.session_state["bool_latex"] = 0
+                
                 msg = []
                 if yes_no.lower() == "yes" or yes_no.lower() == "yes.":
                     try:
                         wa_res = wa_client.query(problem)
                         answer = next(wa_res.results).text
-
-                        latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
-                        response = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo-16k",
-                            temperature=0,
-                            messages=[
-                                {
-                                    "role": "user",
-                                    "content": f"Please convert {answer} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
-                                }
-                            ],
-                        )
-                        answer_latex = response.choices[0].message.content
+                        if st.session_state["bool_latex"] == 1:
+                            latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
+                            response = openai.ChatCompletion.create(
+                                model="gpt-3.5-turbo-16k",
+                                temperature=0,
+                                messages=[
+                                    {
+                                        "role": "user",
+                                        "content": f"Please convert {answer} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
+                                    }
+                                ],
+                            )
+                            answer_latex = response.choices[0].message.content
+                        else:
+                            answer_latex = ""
                         return (
                             answer,
                             answer_latex,
@@ -340,6 +362,7 @@ def main_app():
                     except Exception:
                         answer = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-3.5"
                         answer_latex = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-3.5"
+                        st.session_state["bool_latex"] = 0
                         return (
                             answer,
                             answer_latex,
@@ -347,6 +370,7 @@ def main_app():
                 else:
                     answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     answer_latex = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
+                    st.session_state["bool_latex"] = 0
                     return (
                         answer,
                         answer_latex,
@@ -371,6 +395,7 @@ def main_app():
             st.session_state["generated"].append(output)
             st.session_state["generated_latex"].append(latex_output)
             st.session_state["model_name"].append(model_name)
+            st.session_state["output_format"].append(output_format)
 
             st.session_state["history"].append(user_input)
             st.session_state["history"].append(output)
@@ -404,46 +429,10 @@ def main_app():
                     key=str(i),
                     avatar_style="identicon",
                 )
-                
+
                 # Render the LaTeX equation as an image using matplotlib
-                try:
-                    fig, ax = plt.subplots()
-                    ax.text(
-                        0.01,
-                        0.5,
-                        st.session_state["generated_latex"][i],
-                        fontsize=20,
-                        usetex=True,
-                    )
-                    ax.axis("off")
-                    buffer = io.BytesIO()
-                    plt.savefig(
-                        buffer,
-                        format="png",
-                        dpi=450,
-                        bbox_inches="tight",
-                        pad_inches=0.0,
-                        transparent=True,
-                    )
-                    plt.close(fig)
-
-                    # Display the image in the Streamlit app
-                    st.image(buffer.getvalue())
-
-                except Exception:
+                if st.session_state["output_format"][i] == "Text and LaTeX":
                     try:
-                        latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
-                        response = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo",
-                            temperature=0,
-                            messages=[
-                                {
-                                    "role": "user",
-                                    "content": f"Please convert {latex_output} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
-                                }
-                            ],
-                        )
-                        latex_output = response.choices[0].message.content
                         fig, ax = plt.subplots()
                         ax.text(
                             0.01,
@@ -466,12 +455,47 @@ def main_app():
 
                         # Display the image in the Streamlit app
                         st.image(buffer.getvalue())
-                    except Exception:
-                        logging.exception("latex incorrect")
 
-                st.write(
-                    f"Используемая модель: {st.session_state['model_name'][i]}"
-                )
+                    except Exception:
+                        try:
+                            latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
+                            response = openai.ChatCompletion.create(
+                                model="gpt-3.5-turbo",
+                                temperature=0,
+                                messages=[
+                                    {
+                                        "role": "user",
+                                        "content": f"Please convert {latex_output} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
+                                    }
+                                ],
+                            )
+                            latex_output = response.choices[0].message.content
+                            fig, ax = plt.subplots()
+                            ax.text(
+                                0.01,
+                                0.5,
+                                st.session_state["generated_latex"][i],
+                                fontsize=20,
+                                usetex=True,
+                            )
+                            ax.axis("off")
+                            buffer = io.BytesIO()
+                            plt.savefig(
+                                buffer,
+                                format="png",
+                                dpi=450,
+                                bbox_inches="tight",
+                                pad_inches=0.0,
+                                transparent=True,
+                            )
+                            plt.close(fig)
+
+                            # Display the image in the Streamlit app
+                            st.image(buffer.getvalue())
+                        except Exception:
+                            logging.exception("latex incorrect")
+
+                st.write(f"Используемая модель: {st.session_state['model_name'][i]}")
 
         def save_feedback(email, feedback, rating):
             # Save the feedback, rating and email to MongoDB
