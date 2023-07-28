@@ -349,7 +349,7 @@ def main_app():
 
                         latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
                         response = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo",
+                            model="gpt-3.5-turbo-16k",
                             temperature=0,
                             messages=[
                                 {
@@ -415,7 +415,7 @@ def main_app():
             ) = generate_response(user_input)
 
             print(output)
-        
+
             st.session_state["past"].append(user_input)
             st.session_state["generated"].append(output)
             st.session_state["generated_latex"].append(latex_output)
@@ -453,10 +453,10 @@ def main_app():
                     # user_msg = st.session_state["past"][i]
                     # bot_msg = st.session_state["generated"][i]
                     print("\n\n\noutput:")
-                    print(st.session_state['generated'][i])
+                    print(st.session_state["generated"][i])
                     print("\n\n\n")
                     print("\n\n\noutput_latex:")
-                    print(st.session_state['generated_latex'][i])
+                    print(st.session_state["generated_latex"][i])
                     print("\n\n\n")
                     # Set user avatar using user_msg_container_html_template
                     # user_avatar_template = user_msg_container_html_template.replace("$MSG", user_msg)
@@ -501,8 +501,8 @@ def main_app():
                             pad_inches=0.0,
                             transparent=True,
                         )
-                        plt.close(fig) 
-           
+                        plt.close(fig)
+
                         # Display the image in the Streamlit app
                         st.image(buffer.getvalue())
 
