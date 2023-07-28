@@ -131,12 +131,6 @@ def main_app():
             ]
         if "model_name" not in st.session_state:
             st.session_state["model_name"] = []
-        if "cost" not in st.session_state:
-            st.session_state["cost"] = []
-        if "total_tokens" not in st.session_state:
-            st.session_state["total_tokens"] = []
-        if "total_cost" not in st.session_state:
-            st.session_state["total_cost"] = 0.0
 
         if "history" not in st.session_state:
             st.session_state["history"] = []
@@ -144,14 +138,16 @@ def main_app():
             st.session_state["bool_solve"] = 0
         if "generated_latex" not in st.session_state:
             st.session_state["generated_latex"] = []
+        if "output_format" not in st.session_state:
+            st.session_state["otput_format"] = []
+        if "print_latex" not in st.session_state:
+            st.session_state["print_latex"] = 1
 
-        # Sidebar - let user choose model, show total cost of current conversation, and let user clear the current conversation
+        # Sidebar - let user choose model, output format, and let user clear the current conversation
         st.sidebar.title("Math Sensei")
         model_name = st.sidebar.radio("Выберите модель:", ("GPT-3.5", "wolframalpha"))
+        output_format = st.sidebar.radio("Выберите формат вывода:", ("Text and LaTeX", "Text (faster option)"))
         counter_placeholder = st.sidebar.empty()
-        counter_placeholder.write(
-            f"Общая сумма разговора: ${st.session_state['total_cost']:.5f}"
-        )
         clear_button = st.sidebar.button("Очистить чат", key="clear")
 
         def clear():
@@ -160,17 +156,9 @@ def main_app():
             st.session_state["messages"] = [
                 {"role": "system", "content": "You are a helpful assistant."}
             ]
-            st.session_state["number_tokens"] = []
             st.session_state["model_name"] = []
-            st.session_state["cost"] = []
-            st.session_state["total_cost"] = 0.0
-            st.session_state["total_tokens"] = []
             st.session_state["bool_solve"] = 0
             st.session_state["generated_latex"] = []
-
-            counter_placeholder.write(
-                f"Общая сумма разговора: ${st.session_state['total_cost']:.5f}"
-            )
 
         # reset everything
         if clear_button:
@@ -178,8 +166,6 @@ def main_app():
 
         # generate a response
         def generate_response(prompt):
-            # if len(prompt) > 1500:
-            # return
             if model_name == "GPT-3.5":
                 question = prompt
                 over_token = False
@@ -230,15 +216,9 @@ def main_app():
                     st.session_state["messages"].append(
                         {"role": "assistant", "content": answer}
                     )
-                    total_tokens = 0
-                    prompt_tokens = 0
-                    completion_tokens = 0
                     return (
                         answer,
                         answer_latex,
-                        total_tokens,
-                        prompt_tokens,
-                        completion_tokens,
                     )
                 if (
                     yes_no.lower() == "yes"
@@ -281,15 +261,9 @@ def main_app():
                             st.session_state["messages"].append(
                                 {"role": "assistant", "content": answer}
                             )
-                            total_tokens = response.usage.total_tokens
-                            prompt_tokens = response.usage.prompt_tokens
-                            completion_tokens = response.usage.completion_tokens
                             return (
                                 answer,
                                 answer_latex,
-                                total_tokens,
-                                prompt_tokens,
-                                completion_tokens,
                             )
                     print(
                         f'\n\n\nPAST: {last_past}\nGENERATED {last_generated}\nMESSAGES {st.session_state["messages"][-1]}\n\n'
@@ -306,30 +280,17 @@ def main_app():
                         ],
                     )
                     answer_latex = response.choices[0].message.content
-
-                    total_tokens = response.usage.total_tokens
-                    prompt_tokens = response.usage.prompt_tokens
-                    completion_tokens = response.usage.completion_tokens
                     return (
                         answer,
                         answer_latex,
-                        total_tokens,
-                        prompt_tokens,
-                        completion_tokens,
                     )
 
                 else:
-                    total_tokens = st.session_state["total_cost"]
-                    prompt_tokens = 0
-                    completion_tokens = 0
                     answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     answer_latex = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     return (
                         answer,
                         answer_latex,
-                        total_tokens,
-                        prompt_tokens,
-                        completion_tokens,
                     )
 
             else:
@@ -372,47 +333,27 @@ def main_app():
                             ],
                         )
                         answer_latex = response.choices[0].message.content
-
-                        total_tokens = st.session_state["total_cost"]
-                        prompt_tokens = 0
-                        completion_tokens = 0
-                        # answer_latex = ""
                         return (
                             answer,
                             answer_latex,
-                            total_tokens,
-                            prompt_tokens,
-                            completion_tokens,
                         )
                     except Exception:
-                        total_tokens = st.session_state["total_cost"]
-                        prompt_tokens = 0
-                        completion_tokens = 0
                         answer = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-3.5"
                         answer_latex = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-3.5"
                         return (
                             answer,
                             answer_latex,
-                            total_tokens,
-                            prompt_tokens,
-                            completion_tokens,
                         )
                 else:
-                    total_tokens = st.session_state["total_cost"]
-                    prompt_tokens = 0
-                    completion_tokens = 0
                     answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     answer_latex = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
                     return (
                         answer,
                         answer_latex,
-                        total_tokens,
-                        prompt_tokens,
-                        completion_tokens,
                     )
 
         # container for chat history
-        response_container = st.container()
+        # response_container = st.container()
 
         with st.form(key="my_form", clear_on_submit=True):
             user_input = st.text_area("ВЫ:", key="input", height=100)
@@ -422,9 +363,6 @@ def main_app():
             (
                 output,
                 latex_output,
-                total_tokens,
-                prompt_tokens,
-                completion_tokens,
             ) = generate_response(user_input)
 
             print(output)
@@ -433,7 +371,6 @@ def main_app():
             st.session_state["generated"].append(output)
             st.session_state["generated_latex"].append(latex_output)
             st.session_state["model_name"].append(model_name)
-            st.session_state["total_tokens"].append(total_tokens)
 
             st.session_state["history"].append(user_input)
             st.session_state["history"].append(output)
@@ -452,50 +389,61 @@ def main_app():
                     },
                 )
 
-            # from https://openai.com/pricing#language-models
-            if model_name == "GPT-3.5":
-                cost = total_tokens * 0.002 / 1000
-
-            if model_name == "GPT-3.5":
-                st.session_state["cost"].append(cost)
-                st.session_state["total_cost"] += cost
-
         if st.session_state["generated"]:
-            with response_container:
-                for i in range(len(st.session_state["generated"])):
-                    # user_msg = st.session_state["past"][i]
-                    # bot_msg = st.session_state["generated"][i]
-                    print("\n\n\noutput:")
-                    print(st.session_state["generated"][i])
-                    print("\n\n\n")
-                    print("\n\n\noutput_latex:")
-                    print(st.session_state["generated_latex"][i])
-                    print("\n\n\n")
-                    # Set user avatar using user_msg_container_html_template
-                    # user_avatar_template = user_msg_container_html_template.replace("$MSG", user_msg)
-                    # st.write(
-                    #     user_avatar_template,
-                    #     unsafe_allow_html=True,
-                    # )
+            # with response_container:
+            for i in range(len(st.session_state["generated"])):
+                message(
+                    st.session_state["past"][i],
+                    is_user=True,
+                    key=str(i) + "_user",
+                    avatar_style="micah",
+                )
 
-                    message(
-                        st.session_state["past"][i],
-                        is_user=True,
-                        key=str(i) + "_user",
-                        avatar_style="micah",
+                message(
+                    st.session_state["generated"][i],
+                    key=str(i),
+                    avatar_style="identicon",
+                )
+                
+                # Render the LaTeX equation as an image using matplotlib
+                try:
+                    fig, ax = plt.subplots()
+                    ax.text(
+                        0.01,
+                        0.5,
+                        st.session_state["generated_latex"][i],
+                        fontsize=20,
+                        usetex=True,
                     )
+                    ax.axis("off")
+                    buffer = io.BytesIO()
+                    plt.savefig(
+                        buffer,
+                        format="png",
+                        dpi=450,
+                        bbox_inches="tight",
+                        pad_inches=0.0,
+                        transparent=True,
+                    )
+                    plt.close(fig)
 
-                    # Set bot avatar using bot_msg_container_html_template
-                    # bot_avatar_template = bot_msg_container_html_template.replace("$MSG", bot_msg)
-                    # st.write(
-                    #     bot_avatar_template,
-                    #     unsafe_allow_html=True,
-                    # )
+                    # Display the image in the Streamlit app
+                    st.image(buffer.getvalue())
 
-                    # equation_latex = f"${TST}$"
-                    # st.latex(bot_msg)
-                    # Render the LaTeX equation as an image using matplotlib
+                except Exception:
                     try:
+                        latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
+                        response = openai.ChatCompletion.create(
+                            model="gpt-3.5-turbo",
+                            temperature=0,
+                            messages=[
+                                {
+                                    "role": "user",
+                                    "content": f"Please convert {latex_output} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
+                                }
+                            ],
+                        )
+                        latex_output = response.choices[0].message.content
                         fig, ax = plt.subplots()
                         ax.text(
                             0.01,
@@ -518,82 +466,17 @@ def main_app():
 
                         # Display the image in the Streamlit app
                         st.image(buffer.getvalue())
-
                     except Exception:
-                        try:
-                            latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
-                            response = openai.ChatCompletion.create(
-                                model="gpt-3.5-turbo",
-                                temperature=0,
-                                messages=[
-                                    {
-                                        "role": "user",
-                                        "content": f"Please convert {latex_output} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
-                                    }
-                                ],
-                            )
-                            latex_output = response.choices[0].message.content
-                            fig, ax = plt.subplots()
-                            ax.text(
-                                0.01,
-                                0.5,
-                                st.session_state["generated_latex"][i],
-                                fontsize=20,
-                                usetex=True,
-                            )
-                            ax.axis("off")
-                            buffer = io.BytesIO()
-                            plt.savefig(
-                                buffer,
-                                format="png",
-                                dpi=450,
-                                bbox_inches="tight",
-                                pad_inches=0.0,
-                                transparent=True,
-                            )
-                            plt.close(fig)
+                        logging.exception("latex incorrect")
 
-                            # Display the image in the Streamlit app
-                            st.image(buffer.getvalue())
-                        except Exception:
-                            logging.exception("latex incorrect")
-
-                            # message(
-                            #     st.session_state["generated"][i],
-                            #     key=str(i),
-                            #     avatar_style="identicon",
-                            # )
-
-                    message(
-                        st.session_state["generated"][i],
-                        key=str(i),
-                        avatar_style="identicon",
-                    )
-                    if model_name == "GPT-3.5":
-                        # st.write(
-                        #     str(st.session_state)
-                        #     + "Index:"
-                        #     + str(i)
-                        # )
-                        if i != 0:
-                            st.write(
-                                f"Используемая модель: {st.session_state['model_name'][i]}; Количество токенов: {st.session_state['total_tokens'][i]}; Цена: ${st.session_state['cost'][0]:.5f}"
-                            )
-                    else:
-                        st.write(
-                            f"Используемая модель: {st.session_state['model_name'][i]}; Количество токенов: {st.session_state['total_tokens'][i]}"
-                        )
-                    counter_placeholder.write(
-                        f"Общая сумма разговора: ${st.session_state['total_cost']:.5f}"
-                    )
+                st.write(
+                    f"Используемая модель: {st.session_state['model_name'][i]}"
+                )
 
         def save_feedback(email, feedback, rating):
             # Save the feedback, rating and email to MongoDB
             feedback_data = {"email": email, "rating": rating, "feedback": feedback}
             db["feedbacks"].insert_one(feedback_data)
-
-        # # container for feedback form
-        # feedback_container = st.container()
 
         # with feedback_container:
         st.header("Обратная связь")
