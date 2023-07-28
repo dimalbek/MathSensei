@@ -1,6 +1,5 @@
 streamlit-chat==0.1.1
 streamlit==1.23.1
-langchain==0.0.221
 openai==0.27.8
 wolframalpha==5.0.0
 st-star-rating==0.0.5
