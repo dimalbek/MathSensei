@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
     texlive-fonts-recommended \
     texlive-fonts-extra \
     texlive-latex-extra \
+    cm-super \
+    dvipng \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/dimalbek/MathSensei.git .

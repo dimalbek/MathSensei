@@ -7,4 +7,9 @@ pymongo==4.4.1
 matplotlib==3.7.2
 latex==0.7.0
 PyLaTeX==1.4.1
-
+texlive-latex-base==2023.20230701
+texlive-fonts-recommended==2023.20230701
+texlive-fonts-extra==2023.20230701
+texlive-latex-extra==2023.20230701
+cm-super==2022.20220225
+dvipng==1.14
