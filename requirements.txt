@@ -7,5 +7,4 @@ pymongo==4.4.1
 matplotlib==3.7.2
 latex==0.7.0
 PyLaTeX==1.4.1
-cm-super==2022.20220225
-dvipng==1.14
+
