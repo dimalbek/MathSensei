@@ -128,7 +128,6 @@ def main_app():
         )
         # counter_placeholder = st.sidebar.empty()
         clear_button = st.sidebar.button("Очистить чат", key="clear")
-        # Add space to separate the sidebar from the main content
 
         def clear():
             st.session_state["generated"] = []
