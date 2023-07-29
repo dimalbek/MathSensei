@@ -6,7 +6,6 @@ import pymongo
 import logging
 from bson.objectid import ObjectId
 from streamlit_star_rating import st_star_rating
-from render import logo_html
 import matplotlib.pyplot as plt
 import io
 import os
@@ -130,9 +129,6 @@ def main_app():
         # counter_placeholder = st.sidebar.empty()
         clear_button = st.sidebar.button("Очистить чат", key="clear")
         # Add space to separate the sidebar from the main content
-        st.sidebar.markdown("---")
-        # Display the logo under the sidebar
-        st.sidebar.markdown(logo_html, unsafe_allow_html=True)
 
         def clear():
             st.session_state["generated"] = []
