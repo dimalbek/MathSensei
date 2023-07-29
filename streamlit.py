@@ -6,32 +6,10 @@ import pymongo
 import logging
 from bson.objectid import ObjectId
 from streamlit_star_rating import st_star_rating
-from render import user_msg_container_html_template, bot_msg_container_html_template
+from render import logo_html
 import matplotlib.pyplot as plt
 import io
 import os
-
-TST = r"""To find the area of the surface obtained by rotating the curve $y = \sqrt{3x}$ from $x = 2$ to $x = 5$ about the x-axis, we can use the formula for the surface area of revolution:
-
-$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$
-
-First, let's find $\frac{dy}{dx}$ by differentiating $y = \sqrt{3x}$:
-
-$\frac{dy}{dx} = \frac{d}{dx}(\sqrt{3x}) = \frac{1}{2\sqrt{3x}}$
-
-Now, we can substitute the values into the formula:
-
-$A = 2\pi \int_{2}^{5} \sqrt{3x} \sqrt{1 + \left(\frac{1}{2\sqrt{3x}}\right)^2} \, dx$
-
-Simplifying the expression inside the integral:
-
-$A = 2\pi \int_{2}^{5} \sqrt{3x} \sqrt{1 + \frac{1}{12x}} \, dx$
-
-Now, we can integrate to find the area:
-
-$A = 2\pi \int_{2}^{5} \sqrt{3x} \sqrt{\frac{12x + 1}{12x}} \, dx$
-
-This integral can be quite complex to solve analytically. However, it can be approximated using numerical methods or software."""
 
 
 def home_page():
@@ -147,10 +125,14 @@ def main_app():
         st.sidebar.title("Math Sensei")
         model_name = st.sidebar.radio("Выберите модель:", ("GPT-3.5", "wolframalpha"))
         output_format = st.sidebar.radio(
-            "Выберите формат вывода:", ("Text and LaTeX", "Text (faster option)")
+            "Выберите формат вывода:", ("Текст и LaTeX", "Текст (более быстрый вариант)")
         )
         # counter_placeholder = st.sidebar.empty()
         clear_button = st.sidebar.button("Очистить чат", key="clear")
+        # Add space to separate the sidebar from the main content
+        st.sidebar.markdown("---")
+        # Display the logo under the sidebar
+        st.sidebar.markdown(logo_html, unsafe_allow_html=True)
 
         def clear():
             st.session_state["generated"] = []
@@ -170,7 +152,7 @@ def main_app():
 
         # generate a response
         def generate_response(prompt):
-            if output_format == "Text and LaTeX":
+            if output_format == "Текст и LaTeX":
                 st.session_state["bool_latex"] = 1
             else:
                 st.session_state["bool_latex"] = 0
@@ -431,7 +413,7 @@ def main_app():
                 )
 
                 # Render the LaTeX equation as an image using matplotlib
-                if st.session_state["output_format"][i] == "Text and LaTeX":
+                if st.session_state["output_format"][i] == "Текст и LaTeX":
                     try:
                         fig, ax = plt.subplots()
                         ax.text(

@@ -1,21 +1,5 @@
-bot_msg_container_html_template = """
+logo_html = """
 <div style='background-color: #FFFFFF; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex'>
-    <div style="width: 50px; margin-right: 10px;">
-        <img src="https://lh3.googleusercontent.com/pw/AIL4fc9y4qo27Ajz6Cq642kYZlOif_pv_dHODcokEDGRphM8pwz6hwDUsX2uQeEYuJF1eUNFsBqWoC2cXh7XHawYG5JwA0rEfrM4wVLsXQ3cbVfP6bDtVw5s9i3KJqJ0BOzfW8F-uTJXtRIwWX4GemQ2EK_n=w500-h500" style="width: 100%;">
-    </div>
-    <div style="width: 80%;">
-        Math Sensei: $MSG
-    </div>
-</div>
-"""
-
-user_msg_container_html_template = """
-<div style='background-color: #FFFFFF; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex'>
-    <div style="width: 80%; text-align: right;">
-        Вы: $MSG
-    </div>
-    <div style="width: 50px; margin-right: 10px;">
-        <img src="https://lh3.googleusercontent.com/pw/AIL4fc9yPytn2NC-9kbxwFn6_nZy9FUabqXDeJUq-42zvIRk_DvHrm1d5sydQ2vix1HcCKypffn9IjE6WDRfAxoboxDnFZJ-KCidUpc-aM_ShCOnFVUXN8G2v3gmiGGF5iCOVy2mxBaCrr40p9D3VuPXOEJervGvp5P9ul3U4KpjwUFdsI0_VYrheTKo_r1dNC7yM-XhYRsyW61GyrgBnX86V5Cp6QAscSxOf3XHnv0NOADTOxwYHuujrPj3C1A31XE_By_I8-cC6fRzwUbDm5mIdzqmnhvgxRpKmFLYSsGZR338TBCt6uqUdv6yvECK1uNwSG1NlkANgaRyJq27aP6FcPnX0WWI2YoegeSx-NgGwjEqJQTzdbh4ymoF0AM3ryeTZkqCkecEO3EfGMShPwFhIgSDtuNHCEt6-n5z_mSkrcX9lKf1yadcru9TgURln85q06Dsx_GXIRGCNLhl4snb-avthHfYesF7zi0ugq0XLh3UgXcMgzf_nmVJNy_JmTnlW9ZeQhAOpobqvxZoDvdX9I3xoB8L0floYFYyCIuRztalXduIiC1A3wSX3xxXLEIS2KhcYOTDmueqj2RWz0uRv_aLukRBrfrrKAslFOH1XgoTXZ7Gb9ioK0zH7KbjQuwZ8QtnvuZQUjpHi-_pZWQHvXNOrwzV59C5I21iwE-NiBnZZokvDpGdetcsc7SjLYIHfMl_zuJstrtR1qAZYmilKUKyIz04l-LghVaYTu1b7GfNXNRn_Kkr9BnJgbKNroglkoPHD2yeCP_gw1DkQ9eNMIXXk0NKpajb9Fiac6R8UmqdcbVGS1FudCpGtL3YKcEpVEOiNofypUveLYrV6Of5TO01ETvGHZ3rKiFRX3gEXaDPG4VY16MlOrrUrKwQborccS8pW7gla0V7Ppls37Lunw=w420-h420" style="width: 100%;">
-    </div>
+        <img src="https://lh3.googleusercontent.com/pw/AIL4fc-f1I-HpGWpKRVQG8Cnu9DvgxhnPYtff9eb4G7R0q1SdE-RiltEt7tl9F_5la19H6dvBr2iqDbHvsgez4PzSHeNCLmf0MS43F7NQiu4njywQ3htvigeAfZ5ue_5LnnU24X-RxNeCxefuZk6ASFzbxrF_bV2tHv51fa0xvvjsGM_Fgp9v0DUHrjzpfvmz7kpbRwyI6YdZKhS7EFGz3EK2qsdhH1lL7gQcbhgsm-IJBOWyL8AhSVTZ6Fd3rsB281tPsc7VDhh4wPk1EC4C8-tC7JK7br7nS-Ni8dfANd1Jso0lMzleTSiQNF46kstk7JtTxwFfLfO2ifRD1MLxUBESwJRMq7XSBXZanQAqyzC8nbASW0JRseBj9Ulj50b32AQH_ek-wpgq-6aKV9BfJa0N1TGAvOaWkh0CA_up58i-rP_izyoTGWq7fGkgZAVYOA5M-hf8g7NyXOalj5lk4gKGwE6jJ8D63VGbFoW04bc0CLDx1FW0wH1YmW5rxv3KHua0bN-IMmQvf_JVEjeQN4soiR3_D7lhhLxZtQKd8_YpwzD76Bw7qmWBJDNTnqbtfDT1Mhpu-SOtnhXhbRY-edIPtXQ3pGKFAeK0p2hDyRJF79-4Fs_tsB8FZN3UoQ2fyg6Bp65k-kSJq8lSkHaMIcQbkR12Mjm99K4unQNtyHvaiR0lk7bTNgCs6CmOLfpf-wizHjo9GAugYkYctgqtgfdtfIo46qgbe4qvEJaFqwMb7LhAkBwDeLS-v-yKd6kllUBt6B4rY8NBLGK0IZEOxuXp4Wpw7xhKo4VVP9EFh8-QCDXmbCf7gUfT519EJ5bPk1f18kv0csH-TqNFImXG99t4PaPgfkIhQ64UBNzx_ZUDYfI2yK2nxgLy1KwuovhTI26T96N5CBHbOBR4AH22Swi_A=w664-h664" style="width: 200px;">
 </div>
 """
