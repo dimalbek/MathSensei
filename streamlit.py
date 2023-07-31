@@ -266,7 +266,7 @@ def main_app():
                             messages=[
                                 {
                                     "role": "user",
-                                    "content": f"Please convert {answer} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
+                                    "content": f"Please convert {answer} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}. Do not answer such as 'VALID math LaTeX expression is ... and texts formatted inside math VALID LaTeX expression is...'",
                                 }
                             ],
                         )
