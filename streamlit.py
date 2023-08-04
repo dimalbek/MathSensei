@@ -19,8 +19,10 @@ def home_page():
 
     st.markdown("## Инструкции")
     st.write("1. Введите вашу математическую задачу или вопрос в поле ввода.")
-    st.write("2. Выберите подходящую модель: GPT-3.5 или Wolfram Alpha.")
-    st.write("3. Выберите подходящий формат вывода: Текст и LaTeX или Текст(более быстрый вариант).")
+    st.write("2. Выберите подходящую модель: GPT-4 или Wolfram Alpha.")
+    st.write(
+        "3. Выберите подходящий формат вывода: Текст и LaTeX или Текст(более быстрый вариант)."
+    )
     st.write(
         "4. Нажмите кнопку 'Отправить', чтобы получить ответ от помощника MathSensei."
     )
@@ -32,7 +34,7 @@ def home_page():
     )
 
     st.markdown("## О приложении")
-    st.write("MathSensei работает на базе GPT-3.5 от OpenAI и Wolfram Alpha.")
+    st.write("MathSensei работает на базе GPT-4 от OpenAI и Wolfram Alpha.")
     st.write(
         "Он призван помочь с решением различных математических проблем и вопросов."
     )
@@ -47,7 +49,7 @@ def home_page():
 
     st.markdown("## Примечание")
     st.write(
-        "Обратите внимание, что Wolfram Alpha понимает только английский язык, в то время как GPT-3.5 способен понимать и английский, и русский язык."
+        "Обратите внимание, что Wolfram Alpha понимает только английский язык, в то время как GPT-4 способен понимать и английский, и русский язык."
     )
 
     if st.button("Перейти к основному приложению"):
@@ -123,9 +125,10 @@ def main_app():
 
         # Sidebar - let user choose model, output format, and let user clear the current conversation
         st.sidebar.title("Math Sensei")
-        model_name = st.sidebar.radio("Выберите модель:", ("GPT-3.5", "wolframalpha"))
+        model_name = st.sidebar.radio("Выберите модель:", ("GPT-4", "wolframalpha"))
         output_format = st.sidebar.radio(
-            "Выберите формат вывода:", ("Текст и LaTeX", "Текст (более быстрый вариант)")
+            "Выберите формат вывода:",
+            ("Текст и LaTeX", "Текст (более быстрый вариант)"),
         )
         # counter_placeholder = st.sidebar.empty()
         clear_button = st.sidebar.button("Очистить чат", key="clear")
@@ -152,7 +155,7 @@ def main_app():
                 st.session_state["bool_latex"] = 1
             else:
                 st.session_state["bool_latex"] = 0
-            if model_name == "GPT-3.5":
+            if model_name == "GPT-4":
                 question = prompt
                 over_token = False
                 msg = []
@@ -168,9 +171,7 @@ def main_app():
                     }
                 )
                 try:
-                    chat = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo", messages=msg
-                    )
+                    chat = openai.ChatCompletion.create(model="gpt-4", messages=msg)
                     msg = []
                     yes_no = chat.choices[0].message.content
                 except Exception:
@@ -187,9 +188,7 @@ def main_app():
                         }
                     )
                     try:
-                        chat = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo", messages=msg
-                        )
+                        chat = openai.ChatCompletion.create(model="gpt-4", messages=msg)
                         msg = []
                         yes_nowa = chat.choices[0].message.content
                     except Exception:
@@ -198,7 +197,7 @@ def main_app():
 
                     if yes_nowa.lower() == "yes" or yes_nowa.lower() == "yes.":
                         st.session_state["bool_solve"] = 1
-                
+
                 if over_token is True:
                     answer = "Длина вопроса слишком большая"
                     answer_latex = "Длина вопроса слишком большая"
@@ -229,7 +228,7 @@ def main_app():
 
                     try:
                         response = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo",
+                            model="gpt-4",
                             temperature=0,
                             messages=[{"role": "user", "content": promptt}],
                         )
@@ -239,7 +238,7 @@ def main_app():
                         promptt = f"question: {question}. Please provide VALID and SHORT answer with final result"
                         try:
                             response = openai.ChatCompletion.create(
-                                model="gpt-3.5-turbo",
+                                model="gpt-4",
                                 temperature=0,
                                 messages=[{"role": "user", "content": promptt}],
                             )
@@ -262,7 +261,7 @@ def main_app():
                     if st.session_state["bool_latex"] == 1:
                         latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
                         response = openai.ChatCompletion.create(
-                            model="gpt-3.5-turbo",
+                            model="gpt-4",
                             temperature=0,
                             messages=[
                                 {
@@ -304,15 +303,13 @@ def main_app():
                 )
 
                 try:
-                    chat = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo", messages=msg
-                    )
+                    chat = openai.ChatCompletion.create(model="gpt-4", messages=msg)
                     yes_no = chat.choices[0].message.content
                 except Exception:
                     over_token = True
                     yes_no = "no"
                     st.session_state["bool_latex"] = 0
-                
+
                 msg = []
                 if yes_no.lower() == "yes" or yes_no.lower() == "yes.":
                     try:
@@ -321,7 +318,7 @@ def main_app():
                         if st.session_state["bool_latex"] == 1:
                             latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
                             response = openai.ChatCompletion.create(
-                                model="gpt-3.5-turbo-16k",
+                                model="gpt-4",
                                 temperature=0,
                                 messages=[
                                     {
@@ -338,8 +335,8 @@ def main_app():
                             answer_latex,
                         )
                     except Exception:
-                        answer = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-3.5"
-                        answer_latex = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-3.5"
+                        answer = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-4"
+                        answer_latex = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-4"
                         st.session_state["bool_latex"] = 0
                         return (
                             answer,
@@ -438,7 +435,7 @@ def main_app():
                         try:
                             latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
                             response = openai.ChatCompletion.create(
-                                model="gpt-3.5-turbo",
+                                model="gpt-4",
                                 temperature=0,
                                 messages=[
                                     {
