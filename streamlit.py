@@ -261,7 +261,7 @@ def main_app():
                     if st.session_state["bool_latex"] == 1:
                         latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
                         response = openai.ChatCompletion.create(
-                            model="gpt-4",
+                            model="gpt-3.5-turbo",
                             temperature=0,
                             messages=[
                                 {
@@ -318,7 +318,7 @@ def main_app():
                         if st.session_state["bool_latex"] == 1:
                             latex_example = "$A = 2\pi \int_{a}^{b} y \sqrt{1 + \left(\frac{dy}{dx}\right)^2} \, dx$"
                             response = openai.ChatCompletion.create(
-                                model="gpt-4",
+                                model="gpt-3.5-turbo",
                                 temperature=0,
                                 messages=[
                                     {
