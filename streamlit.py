@@ -440,11 +440,11 @@ def main_app():
                                 messages=[
                                     {
                                         "role": "user",
-                                        "content": f"Please convert {latex_output} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
+                                        "content": f"Please convert {st.session_state['generated_latex'][i]} to VALID math LaTeX expression and texts formatted inside math VALID LaTeX expression. Example: {latex_example}",
                                     }
                                 ],
                             )
-                            latex_output = response.choices[0].message.content
+                            st.session_state["generated_latex"][i] = response.choices[0].message.content
                             fig, ax = plt.subplots()
                             ax.text(
                                 0.01,
