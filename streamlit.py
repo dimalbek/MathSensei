@@ -33,9 +33,9 @@ def home_page():
     st.write("We value your feedback! If you have any suggestions or encounter any issues, please provide your feedback using the feedback form.")
     st.write("Your feedback helps us improve the MathSensei app and provide a better user experience.")
 
-    st.markdown("## Примечание")
+    st.markdown("## Note")
     st.write(
-        "Обратите внимание, что Wolfram Alpha понимает только английский язык, в то время как GPT-4 способен понимать и английский, и русский язык."
+        "Note that Wolfram Alpha understands only English, while GPT-3.5 can understand both English and Russian."
     )
 
     if st.button("Go to main app"):
