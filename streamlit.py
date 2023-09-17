@@ -12,48 +12,34 @@ import os
 
 
 def home_page():
-    st.markdown("# Добро пожаловать в приложение MathSensei")
-    st.write(
-        "MathSensei - это персональный математический помощник, который поможет вам решить различные математические проблемы."
-    )
+    st.markdown("# Welcome to MathSensei App")
+    st.write("MathSensei is a personal math assistant that can help you with various math problems.")
 
-    st.markdown("## Инструкции")
-    st.write("1. Введите вашу математическую задачу или вопрос в поле ввода.")
-    st.write("2. Выберите подходящую модель: GPT-4 или Wolfram Alpha.")
+    st.markdown("## Instructions")
+    st.write("1. Enter your math problem or question in the input box on the left.")
+    st.write("2. Choose the appropriate model: GPT-4 or Wolfram Alpha.")
     st.write(
-        "3. Выберите подходящий формат вывода: Текст и LaTeX или Текст(более быстрый вариант)."
+        "3. Select the appropriate output format: Text and LaTeX or Text (faster option)."
     )
-    st.write(
-        "4. Нажмите кнопку 'Отправить', чтобы получить ответ от помощника MathSensei."
-    )
-    st.write(
-        "5. Помощник предоставит ответ или дополнительные вопросы для уточнения вашего запроса."
-    )
-    st.write(
-        "6. Вы можете вести диалог с помощником, задавая несколько запросов подряд."
-    )
+    st.write("3. Click the 'Send' button to get a response from the MathSensei assistant.")
+    st.write("4. The assistant will provide an answer or further questions to clarify your query.")
+    st.write("5. You can have a conversation with the assistant by entering multiple queries.")
 
-    st.markdown("## О приложении")
-    st.write("MathSensei работает на базе GPT-4 от OpenAI и Wolfram Alpha.")
-    st.write(
-        "Он призван помочь с решением различных математических проблем и вопросов."
-    )
+    st.markdown("## About")
+    st.write("MathSensei is powered by OpenAI's GPT-4 and Wolfram Alpha.")
+    st.write("It aims to provide assistance and solutions to various math problems and queries.")
 
-    st.markdown("## Обратная связь")
-    st.write(
-        "Мы ценим ваше мнение! Если у вас есть предложения или возникли проблемы, пожалуйста, оставьте свой отзыв, используя форму обратной связи."
-    )
-    st.write(
-        "Ваш отзыв помогает нам улучшить приложение MathSensei и предоставить лучший пользовательский опыт."
-    )
+    st.markdown("## Feedback")
+    st.write("We value your feedback! If you have any suggestions or encounter any issues, please provide your feedback using the feedback form.")
+    st.write("Your feedback helps us improve the MathSensei app and provide a better user experience.")
 
     st.markdown("## Примечание")
     st.write(
         "Обратите внимание, что Wolfram Alpha понимает только английский язык, в то время как GPT-4 способен понимать и английский, и русский язык."
     )
 
-    if st.button("Перейти к основному приложению"):
-        st.empty()  # Очистить содержимое домашней страницы
+    if st.button("Go to main app"):
+        st.empty()  # clear content of page
         main_app()
 
 
@@ -75,7 +61,7 @@ def main_app():
     # Setting page title and header
     st.set_page_config(page_title="MathSensei", page_icon="🧠")
     st.markdown(
-        "<h1 style='text-align: center;'>Твой личный Math Sensei🧠</h1>",
+        "<h1 style='text-align: center;'>Your personal Math Sensei🧠</h1>",
         unsafe_allow_html=True,
     )
 
@@ -125,13 +111,13 @@ def main_app():
 
         # Sidebar - let user choose model, output format, and let user clear the current conversation
         st.sidebar.title("Math Sensei")
-        model_name = st.sidebar.radio("Выберите модель:", ("GPT-4", "wolframalpha"))
+        model_name = st.sidebar.radio("Choose model:", ("GPT-4", "WolframAlpha"))
         output_format = st.sidebar.radio(
-            "Выберите формат вывода:",
-            ("Текст и LaTeX", "Текст (более быстрый вариант)"),
+            "Choose output format:",
+            ("Text and LaTeX", "Text (faster option)"),
         )
         # counter_placeholder = st.sidebar.empty()
-        clear_button = st.sidebar.button("Очистить чат", key="clear")
+        clear_button = st.sidebar.button("Clear chat", key="clear")
 
         def clear():
             st.session_state["generated"] = []
@@ -151,7 +137,7 @@ def main_app():
 
         # generate a response
         def generate_response(prompt):
-            if output_format == "Текст и LaTeX":
+            if output_format == "Text and LaTeX":
                 st.session_state["bool_latex"] = 1
             else:
                 st.session_state["bool_latex"] = 0
@@ -199,8 +185,8 @@ def main_app():
                         st.session_state["bool_solve"] = 1
 
                 if over_token is True:
-                    answer = "Длина вопроса слишком большая"
-                    answer_latex = "Длина вопроса слишком большая"
+                    answer = "Exception thrown"
+                    answer_latex = "Exception thrown"
                     st.session_state["bool_latex"] = 0
                     st.session_state["messages"].append(
                         {"role": "assistant", "content": answer}
@@ -245,8 +231,8 @@ def main_app():
                             answer = response.choices[0].message.content
                         except Exception:
                             logging.exception("Too long")
-                            answer = "Длина вопроса слишком большая"
-                            answer_latex = "Длина вопроса слишком большая"
+                            answer = "Exception thrown"
+                            answer_latex = "Exception thrown"
                             st.session_state["bool_latex"] = 0
                             st.session_state["messages"].append(
                                 {"role": "assistant", "content": answer}
@@ -280,8 +266,8 @@ def main_app():
                     )
 
                 else:
-                    answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
-                    answer_latex = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
+                    answer = "Question is not related to math"
+                    answer_latex = "Question is not related to math"
                     st.session_state["bool_latex"] = 0
                     return (
                         answer,
@@ -335,16 +321,16 @@ def main_app():
                             answer_latex,
                         )
                     except Exception:
-                        answer = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-4"
-                        answer_latex = "Извините, я не могу предоставить ответ на данную задачу. Попробуйте модель GPT-4"
+                        answer = "I cannot answer to  this question. Try GPT-4 model"
+                        answer_latex = "I cannot answer to  this question. Try GPT-4 model"
                         st.session_state["bool_latex"] = 0
                         return (
                             answer,
                             answer_latex,
                         )
                 else:
-                    answer = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
-                    answer_latex = "Данный вопрос не относится к математике, поэтому я не могу предоставить ответ на него"
+                    answer = "Question is not related to math"
+                    answer_latex = "Question is not related to math"
                     st.session_state["bool_latex"] = 0
                     return (
                         answer,
@@ -355,8 +341,8 @@ def main_app():
         # response_container = st.container()
 
         with st.form(key="my_form", clear_on_submit=True):
-            user_input = st.text_area("ВЫ:", key="input", height=100)
-            submit_button = st.form_submit_button(label="Отправить")
+            user_input = st.text_area("YOU:", key="input", height=100)
+            submit_button = st.form_submit_button(label="Send")
 
         if submit_button and user_input:
             (
@@ -406,7 +392,7 @@ def main_app():
                 )
 
                 # Render the LaTeX equation as an image using matplotlib
-                if st.session_state["output_format"][i] == "Текст и LaTeX":
+                if st.session_state["output_format"][i] == "Text and LaTeX":
                     try:
                         fig, ax = plt.subplots()
                         ax.text(
@@ -478,20 +464,20 @@ def main_app():
             db["feedbacks"].insert_one(feedback_data)
 
         # with feedback_container:
-        st.header("Обратная связь")
+        st.header("Feedback")
         # Star rating component
         rating = st_star_rating(label="", maxValue=5, defaultValue=0, size=30)
         # Feedback form inputs
-        email_input = st.text_input("Введите ваш адрес электронной почты")
+        email_input = st.text_input("Write you email")
         feedback_text = st.text_area(
-            "Пожалуйста, оставьте ваш отзыв. Если у вас возникли проблемы, задача не была решена или у вас есть предложения по улучшению приложения, опишите их здесь. "
+            "Please leave your feedback. If you have problems, the task was not solved or you have suggestions to improve the application, describe them here. "
         )
 
         # Feedback submit button
-        if st.button("Отправить обратную связь"):
+        if st.button("Send feedback"):
             # Save the feedback and email to a file or database
             save_feedback(email_input, feedback_text, rating)
-            st.success("Спасибо за ваш отзыв!")
+            st.success("Thanks for feedback!")
 
 
 # Run the main app
